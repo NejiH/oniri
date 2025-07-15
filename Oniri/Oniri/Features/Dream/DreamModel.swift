@@ -1,0 +1,25 @@
+//
+//  DreamModel.swift
+//  Oniri
+//
+//  Created by Arnaud Hayon on 15/07/2025.
+//
+
+import Foundation
+
+class Dream {
+    var id = UUID()
+    var title: String
+    var subtitle: String
+    var history: History
+    var powers: Powers
+    var card: [Card]
+    
+    init(title: String, subtitle: String, history: History, powers: Powers, card: [Card]) {
+        self.title = title
+        self.subtitle = subtitle
+        self.history = history
+        self.powers = powers
+        self.card = card
+    }
+}

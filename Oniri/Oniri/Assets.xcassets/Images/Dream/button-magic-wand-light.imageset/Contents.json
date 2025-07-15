@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "button-magic-wand-light.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
