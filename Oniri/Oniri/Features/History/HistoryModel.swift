@@ -11,12 +11,12 @@ class History {
     var title: String
     var narrative: String
     var image: [String]
-    var question: [Question]
+    var questions: [Question]
     
-    init(title: String, narrative: String, image: [String], question: [Question]) {
+    init(title: String, narrative: String, image: [String], questions: [Question]) {
         self.title = title
         self.narrative = narrative
         self.image = image
-        self.question = question
+        self.questions = questions
     }
 }

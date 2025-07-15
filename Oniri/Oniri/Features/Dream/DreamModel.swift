@@ -13,9 +13,9 @@ class Dream {
     var subtitle: String
     var history: History
     var powers: Powers
-    var card: [Card]
+    var card: [Cards]
     
-    init(title: String, subtitle: String, history: History, powers: Powers, card: [Card]) {
+    init(title: String, subtitle: String, history: History, powers: Powers, card: [Cards]) {
         self.title = title
         self.subtitle = subtitle
         self.history = history
