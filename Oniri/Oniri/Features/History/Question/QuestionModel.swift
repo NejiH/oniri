@@ -7,10 +7,11 @@
 
 import Foundation
 
-class Question {
+struct Question {
     var id = UUID()
     var question: String
     var choice: [String]
+    
     init(question: String, choice: [String]) {
         self.question = question
         self.choice = choice

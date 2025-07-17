@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Dream {
+struct Dream {
     var id = UUID()
     var title: String
     var subtitle: String

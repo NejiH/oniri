@@ -7,7 +7,7 @@
 
 import Foundation
 
-class History {
+struct History {
     var title: String
     var narrative: String
     var image: [String]

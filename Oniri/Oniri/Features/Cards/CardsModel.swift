@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Cards {
+struct Cards {
     var id = UUID()
     var name: String
     var image: String
