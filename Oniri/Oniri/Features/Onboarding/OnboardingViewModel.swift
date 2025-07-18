@@ -11,11 +11,9 @@ import Foundation
 @Observable
 class OnboardingViewModel {
     
-    // MARK: - Propriétés
     var currentPage = 0
     var isOnboardingCompleted = false
     
-    // MARK: - Computed Properties
     var currentOnboarding: OnboardingModel {
         return onboarding[currentPage]
     }
@@ -32,7 +30,6 @@ class OnboardingViewModel {
         return Float(onboarding.count)
     }
     
-    // MARK: - Méthodes
     func nextPage() {
         if currentPage == onboarding.count - 1 {
             completeOnboarding()
@@ -41,7 +38,7 @@ class OnboardingViewModel {
         }
     }
     
-    private func completeOnboarding() {
+    func completeOnboarding() {
         isOnboardingCompleted = true
     }
     
