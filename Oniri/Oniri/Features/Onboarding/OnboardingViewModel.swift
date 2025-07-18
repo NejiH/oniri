@@ -14,12 +14,6 @@ struct OnboardingViewModel: View {
     
     var body: some View {
         
-        
-        
-        
-        // Bouton
-        // Design
-        
         let currentOnboarding = onboarding[currentPage]
         
         VStack {
@@ -58,6 +52,7 @@ struct OnboardingViewModel: View {
                     if currentPage == onboarding.count - 1 {
                         isOnboardingCompleted = true
                     } else {
+                        
                         currentPage += 1
                     }
                 }) {
@@ -80,9 +75,7 @@ struct OnboardingViewModel: View {
                 .padding(.leading, 220)
                 
             } else {
-                NavigationLink(destination: TestLandingPage()) {
-                }
-                
+                LandingPageView()
             }
             
         }
