@@ -78,7 +78,7 @@ struct OnboardingView: View {
         .font(Font.custom("InstrumentSans-Bold", size: 16))
         .background(Color(viewModel.currentOnboarding.buttonColor))
         .foregroundColor(Color(viewModel.currentOnboarding.buttonTextColor))
-        .cornerRadius(30)
+        .clipShape(Capsule())
         .padding(.top, 50)
         .padding(.bottom, 50)
         .padding(.leading, 220)
