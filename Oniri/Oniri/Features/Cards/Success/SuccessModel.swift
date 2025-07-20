@@ -12,11 +12,4 @@ struct SuccessModel {
     var title: String
     var card: [Cards]
     var description: String
-    
-    init(id: UUID = UUID(), title: String, card: [Cards], description: String) {
-        self.id = id
-        self.title = title
-        self.card = card
-        self.description = description
-    }
 }

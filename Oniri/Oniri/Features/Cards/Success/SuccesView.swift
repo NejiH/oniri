@@ -17,24 +17,26 @@ struct SuccesView: View {
                     .fill(.softPink)
             }
             .ignoresSafeArea()
-            VStack(spacing: 10){
+            VStack(alignment: .center, spacing: 10){
                 Rectangle()
                     .fill(.softPink)
                     .frame(width: 200, height: 2)
-                    
+                //MARK: Titre
                 Text("Félicitations")
                     .font(.custom("DelaGothicOne-Regular", size: 46))
                     .foregroundStyle(.primaryBeige)
                     .bold()
+                //MARK: Description
                 Text("Tu as complété l’exploration et obtenu l'artefact du Rêve#1 !")
                     .foregroundStyle(.primaryBeige)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
-                Image("card-patience")
-                    .resizable()
-                    .scaledToFit()
+                //MARK: Carte
+                CardsRotateButton()
                     .shadow(color: .black.opacity(0.6), radius: 12, x: 10, y: 20)
-                
+                    .padding(.leading, 8)
+                    
+                //MARK: Boutton
                 Button {
                     print("retour")
                 } label: {
