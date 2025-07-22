@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SuccesView: View {
+    @State var successVM : SuccessViewModel
     var body: some View {
         ZStack{
             VStack(spacing: -1){
@@ -27,12 +28,12 @@ struct SuccesView: View {
                     .foregroundStyle(.primaryBeige)
                     .bold()
                 //MARK: Description
-                Text("Tu as complété l’exploration et obtenu l'artefact du Rêve#1 !")
+                Text(successVM.model.description)
                     .foregroundStyle(.primaryBeige)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
                 //MARK: Carte
-                CardsRotateButton()
+                CardsRotateButton(descriptionCard: successVM.model.card.description, imageCard: successVM.model.card.image)
                     .shadow(color: .black.opacity(0.6), radius: 12, x: 10, y: 20)
                     .padding(.leading, 8)
                     
@@ -42,6 +43,7 @@ struct SuccesView: View {
                 } label: {
                     Text("Retour")
                         .foregroundStyle(.primaryBeige)
+                        .bold()
                         .padding()
                         .background{
                             RoundedRectangle(cornerRadius: 20)
@@ -57,6 +59,27 @@ struct SuccesView: View {
     }
 }
 
+        
 #Preview {
-    SuccesView()
+    let testQuestions = [
+        Question(question: "Oui monsieur ", choice: ["Oui", "Non"]),
+        Question(question: "Oui madame ", choice: ["Oui", "Non"])
+    ]
+    let testHistory = History(title: "Route des Brumes", narrative: "blabklablab", image: [""], questions: testQuestions)
+    let testPowers = Powers.magicPen
+    let testCard = Cards(name: "Flamme Onirique", image: "card-patience", description: "Une carte puissante.", isLocked: false)
+    let testDream = Dream(
+        title: "Le monde d'hurul",
+        subtitle: "Le début d'une aventure",
+        history: testHistory,
+        powers: testPowers,
+        card: [testCard],
+        isSuccessful: true
+    )
+    let dreamVM = DreamViewModel(dream: testDream)
+    let successVM = SuccessViewModel(from: dreamVM)
+
+    SuccesView(successVM: successVM)
 }
+        
+ 
