@@ -11,6 +11,8 @@ struct SuccesView: View {
     @State var successVM : SuccessViewModel
     var body: some View {
         ZStack{
+            
+            //MARK: Background
             VStack(spacing: -1){
                 Rectangle()
                     .fill(.sofGreen)
@@ -22,16 +24,19 @@ struct SuccesView: View {
                 Rectangle()
                     .fill(.softPink)
                     .frame(width: 200, height: 2)
+                
                 //MARK: Titre
                 Text("Félicitations")
                     .font(.custom("DelaGothicOne-Regular", size: 46))
                     .foregroundStyle(.primaryBeige)
                     .bold()
+                
                 //MARK: Description
                 Text(successVM.model.description)
                     .foregroundStyle(.primaryBeige)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 30)
+                
                 //MARK: Carte
                 CardsRotateButton(descriptionCard: successVM.model.card.description, imageCard: successVM.model.card.image)
                     .shadow(color: .black.opacity(0.6), radius: 12, x: 10, y: 20)
@@ -59,7 +64,7 @@ struct SuccesView: View {
     }
 }
 
-        
+//MARK: Preview
 #Preview {
     let testQuestions = [
         Question(question: "Oui monsieur ", choice: ["Oui", "Non"]),
@@ -67,7 +72,7 @@ struct SuccesView: View {
     ]
     let testHistory = History(title: "Route des Brumes", narrative: "blabklablab", image: [""], questions: testQuestions)
     let testPowers = Powers.magicPen
-    let testCard = Cards(name: "Flamme Onirique", image: "card-patience", description: "Une carte puissante.", isLocked: false)
+    let testCard = Cards(name: "Flamme Onirique", image: "card-patience", description: "Une carte qui vous offre une extrême patience afin de braver toutes formes de stresse.", isLocked: false)
     let testDream = Dream(
         title: "Le monde d'hurul",
         subtitle: "Le début d'une aventure",

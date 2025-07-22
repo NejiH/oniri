@@ -16,6 +16,6 @@ class SuccessViewModel{
 
          self.model = SuccessModel(
              card: card,
-             description: "Tu as complété l’exploration du rêve « \(dream.title) » et obtenu la carte « \(card.name) »."
+             description: "Tu as complété l’exploration du rêve \(dream.title) et obtenu la carte \(card.name)."
          )
      }}
