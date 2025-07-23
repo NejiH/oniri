@@ -34,7 +34,7 @@ class ConstellationState: ObservableObject {
         }
     }
 }
-//
+
 // MARK: - Data Models
 struct Star {
     let id = UUID()
@@ -51,6 +51,7 @@ struct ConstellationStar {
     let x: Double
     let y: Double
     let size: Double
+    let name: String
 }
 
 // MARK: - Main Landing Page View
@@ -60,10 +61,10 @@ struct LandingPageView: View {
     
     // MARK: Constellation en Trapèze (positionnée sur l'océan)
     private let constellationStars: [ConstellationStar] = [
-        ConstellationStar(id: 1, x: 0.22, y: 0.7, size: 24),    // Haut gauche
-        ConstellationStar(id: 2, x: 0.78, y: 0.7, size: 24),    // Haut droite
-        ConstellationStar(id: 3, x: 0.15, y: 0.85, size: 24),   // Bas gauche
-        ConstellationStar(id: 4, x: 0.85, y: 0.85, size: 24)    // Bas droite
+        ConstellationStar(id: 1, x: 0.22, y: 0.7, size: 24, name: "Liberté"),    // Haut gauche
+        ConstellationStar(id: 2, x: 0.78, y: 0.7, size: 24, name: "Aventure"),   // Haut droite
+        ConstellationStar(id: 3, x: 0.15, y: 0.85, size: 24, name: "Amour"),     // Bas gauche
+        ConstellationStar(id: 4, x: 0.85, y: 0.85, size: 24, name: "Sagesse")    // Bas droite
     ]
     
     var body: some View {
@@ -331,26 +332,42 @@ struct ConstellationStarView: View {
         )
         
         Button(action: {
+            // Utiliser le state manager au lieu du state local
             constellationState.selectStar(star.id)
             print("Étoile \(star.id) tapée - Sélectionnée: \(isSelected)")
         }) {
-            StarShape()
-                .fill(starColor)
-                .stroke(starColor.opacity(0.9), lineWidth: 2)
-                .frame(width: starSize, height: starSize)
-                .scaleEffect(
-                    // Combiner l'effet de glow et de sélection
-                    (isGlowing ? 1.1 : 1.0) * (isSelected ? 2.5 : 1.0)
-                )
-                .opacity(1.0)
-                .shadow(color: Color.black.opacity(0.6), radius: 4)
-                .shadow(color: starColor.opacity(1.0), radius: isGlowing ? 15 : 10)
-                .shadow(color: starColor.opacity(0.8), radius: isGlowing ? 25 : 20)
-                // Shadow plus forte si sélectionnée
-                .shadow(
-                    color: starColor.opacity(isSelected ? 1.0 : 0.0),
-                    radius: isSelected ? 40 : 0
-                )
+            VStack(spacing: isSelected ? 20 : 8) {
+                // L'étoile
+                StarShape()
+                    .fill(starColor)
+                    .stroke(starColor.opacity(0.9), lineWidth: 2)
+                    .frame(width: starSize, height: starSize)
+                    .scaleEffect(
+                        // Combiner l'effet de glow et de sélection
+                        (isGlowing ? 1.1 : 1.0) * (isSelected ? 2.5 : 1.0)
+                    )
+                    .opacity(1.0)
+                    .shadow(color: Color.black.opacity(0.6), radius: 4)
+                    .shadow(color: starColor.opacity(1.0), radius: isGlowing ? 15 : 10)
+                    .shadow(color: starColor.opacity(0.8), radius: isGlowing ? 25 : 20)
+                    // Shadow plus forte si sélectionnée
+                    .shadow(
+                        color: starColor.opacity(isSelected ? 1.0 : 0.0),
+                        radius: isSelected ? 40 : 0
+                    )
+                
+                // Le nom du rêve
+                Text(star.name)
+                    .font(.custom("DelaGothicOne-Regular", size: isSelected ? 18 : 14))
+                    .foregroundColor(starColor)
+                    .opacity(isSelected ? 1.0 : 0.8)
+                    .scaleEffect(isSelected ? 1.2 : 1.0)
+                    .shadow(color: Color.black.opacity(0.8), radius: 2)
+                    .shadow(color: starColor.opacity(0.3), radius: isSelected ? 8 : 4)
+                    .animation(.easeInOut(duration: 0.3), value: isSelected)
+                    // Décalage supplémentaire pour éviter la superposition
+                    .offset(y: isSelected ? 15 : 0)
+            }
         }
         .buttonStyle(PlainButtonStyle())
         .position(starPosition)
