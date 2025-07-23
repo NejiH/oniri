@@ -9,7 +9,6 @@ import Foundation
 
 struct SuccessModel {
     var id = UUID()
-    var title: String
-    var card: [Cards]
+    var card: Cards
     var description: String
 }
