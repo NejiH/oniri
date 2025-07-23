@@ -25,7 +25,7 @@ struct OnboardingView: View {
         .ignoresSafeArea()
     }
     
-    // MARK: - Tous les éléments de lq page qui sont des vues
+    // MARK: -Tous les éléments de lq page qui sont des vues
     var onboardingContent: some View {
         VStack {
             progressBar

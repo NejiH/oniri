@@ -9,7 +9,13 @@ import SwiftUI
 
 struct LaunchingPageView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ZStack{
+            Image("logo-oniri")
+                .resizable()
+                .scaledToFit()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.launchGreen)
     }
 }
 
