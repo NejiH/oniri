@@ -70,7 +70,7 @@ struct SuccesView: View {
         Question(question: "Oui monsieur ", choice: ["Oui", "Non"]),
         Question(question: "Oui madame ", choice: ["Oui", "Non"])
     ]
-    let testHistory = History(title: "Route des Brumes", subtitle: "", narrative: "blabklablab", image: [""], questions: testQuestions)
+    let testHistory = History(title: "Le rêve de brume", narrative: [""], image: ["String" : "String"], questions: testQuestions[0])
     let testPowers = Powers.magicPen
     let testCard = Cards(name: "Flamme Onirique", image: "card-patience", description: "Une carte qui vous offre une extrême patience afin de braver toutes formes de stresse.", isLocked: false)
     let testDream = Dream(
