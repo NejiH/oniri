@@ -17,3 +17,12 @@ struct Question {
         self.choice = choice
     }
 }
+
+let questions: [Question] = [
+    Question(question: "1", choice: ["a", "b"]),
+    Question(question: "2", choice: ["c", "d"]),
+    Question(question: "3", choice: ["e", "f"]),
+    Question(question: "4", choice: ["g", "h"]),
+    Question(question: "5", choice: ["i", "j"]),
+    Question(question: "6", choice: ["k", "l"])
+]
