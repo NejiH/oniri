@@ -5,17 +5,11 @@
 //  Created by Arnaud Hayon on 22/07/2025.
 //
 
-import SwiftUI
+import Foundation
 
-struct PowersViewModel: View {
+class PowersViewModel {
+    
+}
     
     
-    var body: some View {
-        
-      
-    }
-}
 
-#Preview {
-    PowersViewModel()
-}
