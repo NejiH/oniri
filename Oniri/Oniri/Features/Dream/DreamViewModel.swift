@@ -17,6 +17,6 @@ class DreamViewModel{
     
     // Simulation d'une fin de mission
     func completeDream(isSuccessful : Bool, card: Cards){
-        let _ = Dream(title: dream.title, subtitle: dream.subtitle, history: dream.history, powers: dream.powers, card: dream.card, isSuccessful: dream.isSuccessful)
+        _ = Dream(title: dream.title, subtitle: dream.subtitle, history: dream.history, powers: dream.powers, card: dream.card, isSuccessful: dream.isSuccessful)
     }
 }
