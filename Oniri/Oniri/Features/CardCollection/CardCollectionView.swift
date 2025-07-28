@@ -31,6 +31,7 @@ struct CardCollectionView: View {
                 }
                 .padding(.vertical, 45)
             }
+            .navigationBarBackButtonHidden(true)
             //MARK: Background
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background{
