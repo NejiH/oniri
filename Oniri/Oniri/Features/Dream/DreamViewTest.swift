@@ -8,8 +8,13 @@
 import SwiftUI
 
 struct DreamViewTest: View {
+    
+    @State private var viewModel = HistoryViewModel()
+    
     var body: some View {
       ZStack {
+          Color.primaryBeige
+              .ignoresSafeArea()
           // Le cadre décoratif
           Image("CadreDecoratif")
               .resizable()
@@ -21,12 +26,18 @@ struct DreamViewTest: View {
           ScrollView {
               VStack() {
                 Image("top-moon")
-                  Text("NOM DU RÊVE")
-                      .font(.title)
+                  Rectangle()
+                      .fill(.darkGreen)
+                      .frame(width: 200, height: 1) // check dimensions
+                  Text(viewModel.currentHistory.title)
+                      .font(Font.custom("DelaGothicOne-Regular", size: 28))
                       .bold()
-                  Text(phase)
-                  Text(longText)
-                      .padding()
+                  Text(viewModel.currentHistory.subtitle)
+                  Text(viewModel.currentHistory.narrative[0])
+                  Text(viewModel.currentHistory.questions ?? "C'est la fin")
+                  Text(viewModel.currentHistory.answer?[0] ?? "Réponse 1")
+                  Text(viewModel.currentHistory.answer?[1] ?? "Réponse 2")
+                      
               }
               .padding(.horizontal, 24)
               .padding(.vertical, 32)
@@ -50,26 +61,6 @@ struct DreamViewTest: View {
   let phase = "Pase sommeil"
   let longText = """
   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-
-  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-
-  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-  Excepteur sint occaecat
-
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-
-  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit.
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-
-  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-  Excepteur sint occaecat
   
   """
 }

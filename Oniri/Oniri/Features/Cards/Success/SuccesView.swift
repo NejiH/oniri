@@ -66,11 +66,11 @@ struct SuccesView: View {
 
 //MARK: Preview
 #Preview {
-    let testQuestions = [
-        Question(question: "Oui monsieur ", choice: ["Oui", "Non"]),
-        Question(question: "Oui madame ", choice: ["Oui", "Non"])
-    ]
-    let testHistory = History(title: "Route des Brumes", subtitle: "", narrative: "blabklablab", image: [""], questions: testQuestions)
+//    var _ = [
+//        Question(id: 1, question: "Oui monsieur ", choices: [Choice(text: "Bonjour", destination: histories[0], trait: .empathy), Choice(text: "Bonjour", destination: histories[1], trait: .empathy)]),
+//        Question(id: 2, question: "Oui monsieur ", choices: [Choice(text: "Bonjour", destination: histories[2], trait: .empathy), Choice(text: "Bonjour", destination: histories[3], trait: .empathy)]),
+//    ]
+    let testHistory = History(id: 1, title: "Titre", subtitle: "Sous-titre", narrative: ["Histoire 1"], image: ["end":""])
     let testPowers = Powers.magicPen
     let testCard = Cards(name: "Flamme Onirique", image: "card-patience", description: "Une carte qui vous offre une extrême patience afin de braver toutes formes de stresse.", isLocked: false)
     let testDream = Dream(
