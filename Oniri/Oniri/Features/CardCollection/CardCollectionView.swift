@@ -20,7 +20,7 @@ struct CardCollectionView: View {
                         .frame(width: 75, height: 69.99)
                         .padding(.top)
                 
-                    //MARK: Titre de la vue et le deck 
+                    //MARK: Titre de la vue et le deck
                     contentText
   
                     //MARK: Carousel
@@ -43,7 +43,6 @@ struct CardCollectionView: View {
             LandingPageView()
         }
     }
-    
     
     //MARK: Propriété calculer retournant une vue
     var contentText: some View{
