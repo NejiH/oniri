@@ -15,10 +15,10 @@ struct SuccessModel {
     
     
     let testQuestions = [
-        Question(question: "Oui monsieur ", choice: ["Oui", "Non"]),
-        Question(question: "Oui madame ", choice: ["Oui", "Non"])
+        Question(question: "Oui monsieur ", choices: ["Oui", "Non"]),
+        Question(question: "Oui madame ", choices: ["Oui", "Non"])
     ]
-let testHistory = History(title: "Route des Brumes", narrative: ["blabklablab"], image: ["":""], questions: testQuestions[0])
+let testHistory = History(id: 1, title: "Route des Brumes",subtitle: "Sommeil léger", narrative: ["blabklablab"], image: ["":""], questions: "Que fais-tu ?", answer: ["Je suis la voix doucement, en chuchotant tout rassurer l'enfant", "Je cours dans le labyrinthe, bravant les ombres sans réfléchir"])
     let testPowers = Powers.magicPen
     let testCard = Cards(name: "Flamme Onirique", image: "card-patience", description: "Une carte qui vous offre une extrême patience afin de braver toutes formes de stresse.", isLocked: false)
     let testDream = Dream(
