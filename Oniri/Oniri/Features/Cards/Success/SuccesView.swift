@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct SuccesView: View {
-    @State var successVM : SuccessViewModel
+    
+    @State var successVM: SuccessViewModel
+    
     var body: some View {
         if !successVM.isBack{
             ZStack{
