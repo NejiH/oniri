@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Cards {
+struct Cards: Identifiable, Equatable, Hashable {
     var id = UUID()
     var name: String
     var image: String
@@ -22,3 +22,4 @@ struct Cards {
         self.isLocked = isLocked
     }
 }
+
