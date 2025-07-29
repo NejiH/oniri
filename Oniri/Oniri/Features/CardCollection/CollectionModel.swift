@@ -12,15 +12,15 @@ struct Collection{
     var cards: [Cards]
 }
 
-let cardsCollection = Collection(
+var cardsCollection = Collection(
     nbCard: 20,
     cards: [
         Cards(name: "Patience", image: "card-patience", description: "La patience est une vertu.", isLocked: false),
         Cards(name: "Créativité", image: "card-creativite", description: "Laisse parler ton imagination.", isLocked: false),
         Cards(name: "Bienveillance", image: "card-bienveillance", description: "Fais preuve de gentillesse.", isLocked: false),
-        Cards(name: "Empathie", image: "card-empathie", description: "Comprendre les autres profondément.", isLocked: false),
+        Cards(name: "Empathie", image: "card-optimist", description: "Comprendre les autres profondément.", isLocked: false),
         Cards(name: "Courage", image: "card-courage", description: "Avance malgré la peur.", isLocked: false),
-        Cards(name: "Liberté", image: "card-liberte", description: "Exprime-toi librement.", isLocked: true),
+        Cards(name: "Liberté", image: "card-empathie", description: "Exprime-toi librement.", isLocked: true),
         Cards(name: "Sérénité", image: "card-serenite", description: "Reste calme en toute situation.", isLocked: true),
         Cards(name: "Respect", image: "card-respect", description: "Accepte les différences.", isLocked: true),
         Cards(name: "Écoute", image: "card-ecoute", description: "Sois attentif aux autres.", isLocked: true),

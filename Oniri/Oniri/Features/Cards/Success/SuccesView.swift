@@ -33,7 +33,7 @@ struct SuccesView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         }else {
-            SuccessEndView()
+            CardCollectionView()
         }
     }
     //MARK: Composants de la vue Body
@@ -69,6 +69,7 @@ struct SuccesView: View {
     var buttonBack: some View {
         Button {
             successVM.goBack()
+            successVM.addCardCollection()
         } label: {
             Text("Retour")
                 .foregroundStyle(.primaryBeige)
