@@ -16,6 +16,7 @@ struct DreamLaunchView: View {
     var body: some View {
         if showDreamView {
             DreamView(successVM: successVM)
+                .transition(.opacity)
         } else {
             ZStack {
                 // L' image du rêve
@@ -42,10 +43,14 @@ struct DreamLaunchView: View {
                     )
                     .foregroundColor(.black)
             }
+            .transition(.opacity)
             // Délai de 5.5 secondes avant la transition vers le rêve
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) {
-                    showDreamView = true
+                    // Animation fade classique linéaire
+                    withAnimation(.linear(duration: 1.0)) {
+                        showDreamView = true
+                    }
                 }
             }
         }
