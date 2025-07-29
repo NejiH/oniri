@@ -18,8 +18,6 @@ struct SuccesView: View {
                 backgroundSuccess
                 .ignoresSafeArea()
                 VStack(alignment: .center, spacing: 10){
-
-                 
                     //MARK: Contient tout les textes
                     contentText
                     Spacer()
@@ -27,7 +25,6 @@ struct SuccesView: View {
                     CardsRotateButton(descriptionCard: successVM.model.card.description, imageCard: successVM.model.card.image)
                         .shadow(color: .black.opacity(0.6), radius: 12, x: 10, y: 20)
                         .padding(.leading, 8)
-                        
                     //MARK: Button
                     buttonBack
                 }
