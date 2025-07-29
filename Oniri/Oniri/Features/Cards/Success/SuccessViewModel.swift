@@ -10,8 +10,8 @@ import Foundation
 @Observable
 class SuccessViewModel{
     var model: SuccessModel
-
     var isBack : Bool = false
+    let collectionVM = CollectionViewModel.shared
     
     init(from dreamVM: DreamViewModel) {
         let dream = dreamVM.dream
@@ -27,4 +27,7 @@ class SuccessViewModel{
      isBack = true
     }
     
+    func addCardCollection(){
+        collectionVM.unlockCard(at: 5)
+    }
 }

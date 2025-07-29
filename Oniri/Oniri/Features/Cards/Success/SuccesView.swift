@@ -69,8 +69,9 @@ struct SuccesView: View {
     var buttonBack: some View {
         Button {
             successVM.goBack()
+            successVM.addCardCollection()
         } label: {
-            Text("Retour")
+            Text("Terminer")
                 .foregroundStyle(.primaryBeige)
                 .bold()
                 .padding()
