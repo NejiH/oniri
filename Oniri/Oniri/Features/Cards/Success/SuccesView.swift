@@ -18,12 +18,11 @@ struct SuccesView: View {
                 backgroundSuccess
                 .ignoresSafeArea()
                 VStack(alignment: .center, spacing: 10){
-                    Rectangle()
-                        .fill(.softPink)
-                        .frame(width: 200, height: 2)
+
+                 
                     //MARK: Contient tout les textes
                     contentText
-    
+                    Spacer()
                     //MARK: Carte
                     CardsRotateButton(descriptionCard: successVM.model.card.description, imageCard: successVM.model.card.image)
                         .shadow(color: .black.opacity(0.6), radius: 12, x: 10, y: 20)
@@ -51,6 +50,9 @@ struct SuccesView: View {
     }
     var contentText: some View {
         VStack{
+            Rectangle()
+                .fill(.softPink)
+                .frame(width: 200, height: 2)
             //MARK: Titre
             Text("Félicitations")
                 .textCase(.uppercase)
@@ -64,6 +66,7 @@ struct SuccesView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 30)
         }
+
     }
     
     var buttonBack: some View {
