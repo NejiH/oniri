@@ -56,7 +56,8 @@ struct CardCollectionView: View {
                     .frame(width: 30, height: 30)
                     .foregroundStyle(.softPink)
                 Text("Collection")
-                    .font(.custom("DelaGothicOne-Regular", size: 35))
+                    .textCase(.uppercase)
+                    .font(.custom("DelaGothicOne-Regular", size: 28))
                     .padding(.horizontal, 4)
      
                 Image(systemName: "star.fill")
