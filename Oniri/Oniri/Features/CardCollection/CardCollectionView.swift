@@ -22,6 +22,7 @@ struct CardCollectionView: View {
                 
                     //MARK: Titre de la vue et le deck
                     contentText
+                    Spacer()
   
                     //MARK: Carousel
                     cardsCarousel
