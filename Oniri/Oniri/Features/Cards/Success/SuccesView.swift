@@ -53,7 +53,8 @@ struct SuccesView: View {
         VStack{
             //MARK: Titre
             Text("Félicitations")
-                .font(.custom("DelaGothicOne-Regular", size: 46))
+                .textCase(.uppercase)
+                .font(.custom("DelaGothicOne-Regular", size: 28))
                 .foregroundStyle(.primaryBeige)
                 .bold()
             
