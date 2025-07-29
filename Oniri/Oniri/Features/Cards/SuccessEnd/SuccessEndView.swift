@@ -65,17 +65,28 @@ struct SuccessEndView: View {
     }
     
     var contentText: some View {
-        VStack{
+        VStack (spacing: 10){
             Rectangle()
                 .fill(.softPink)
                 .frame(width: 200, height: 2)
             
             //MARK: Titre
-            Text("BIENVEILLANCE")
+            Text("PERSONNALITÉ")
                 .font(.custom("DelaGothicOne-Regular", size: 30))
                 .foregroundStyle(.primaryBeige)
                 .bold()
                 .textCase(.uppercase)
+            HStack {
+                Text("Vous êtes")
+                 Text("bienveillant·e")
+                    .bold()
+            }
+            .foregroundStyle(.primaryBeige)
+            .font(.system(size: 22))
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 30)
+            .padding(.top, 20)
+            
         }
     }
     
@@ -84,7 +95,7 @@ struct SuccessEndView: View {
     var imageCards: some View {
         viewModel.successCards
             .resizable()
-            .scaledToFit()
+            .scaledToFill()
             .frame(maxWidth: 360, maxHeight: 270)
         
     }

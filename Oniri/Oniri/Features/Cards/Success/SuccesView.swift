@@ -33,7 +33,7 @@ struct SuccesView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         }else {
-            LandingPageView()
+            SuccessEndView()
         }
     }
     //MARK: Composants de la vue Body

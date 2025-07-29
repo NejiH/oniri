@@ -10,12 +10,12 @@ import Foundation
 @Observable
 class SuccessViewModel{
     var model: SuccessModel
-    
+
     var isBack : Bool = false
     
     init(from dreamVM: DreamViewModel) {
         let dream = dreamVM.dream
-        let card = dream.card.first ?? Cards(name: "Patience", image: "card-patience", description: "Pas de carte disponible", isLocked: false)
+        let card = dream.card.first ?? Cards(name: "Empathie", image: "card-empathie", description: "Pas de carte disponible", isLocked: false)
         
         self.model = SuccessModel(
             card: card,

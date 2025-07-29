@@ -60,7 +60,7 @@ struct DreamView: View {
                             Spacer()
                             
                             // La question
-                            Text(viewModel.currentHistory.questions ?? "C'est la fin")
+                            Text(viewModel.currentHistory.questions ?? "")
                                 .textCase(.uppercase)
                                 .font(Font.custom("DelaGothicOne-Regular", size: 15))
                                 .bold()
