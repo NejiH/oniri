@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Constellation State Manager (AMÉLIORÉ)
+// MARK: - Constellation State Manager
 class ConstellationState: ObservableObject {
     @Published var selectedStarId: Int? = nil
     
@@ -13,28 +13,8 @@ class ConstellationState: ObservableObject {
     func isStarSelected(_ starId: Int) -> Bool {
         return selectedStarId == starId
     }
-    
-    func deselectAll() {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            selectedStarId = nil
-        }
-    }
-    
-    func hasSelection() -> Bool {
-        return selectedStarId != nil
-    }
-    
-    func getSelectedStarId() -> Int? {
-        return selectedStarId
-    }
-    
-    func forceSelectStar(_ starId: Int) {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            selectedStarId = starId
-        }
-    }
 }
-//
+
 // MARK: - Data Models
 struct Star {
     let id = UUID()
@@ -51,6 +31,7 @@ struct ConstellationStar {
     let x: Double
     let y: Double
     let size: Double
+    let name: String
 }
 
 // MARK: - Main Landing Page View
@@ -60,10 +41,10 @@ struct LandingPageView: View {
     
     // MARK: Constellation en Trapèze (positionnée sur l'océan)
     private let constellationStars: [ConstellationStar] = [
-        ConstellationStar(id: 1, x: 0.22, y: 0.7, size: 24),    // Haut gauche
-        ConstellationStar(id: 2, x: 0.78, y: 0.7, size: 24),    // Haut droite
-        ConstellationStar(id: 3, x: 0.15, y: 0.85, size: 24),   // Bas gauche
-        ConstellationStar(id: 4, x: 0.85, y: 0.85, size: 24)    // Bas droite
+        ConstellationStar(id: 1, x: 0.22, y: 0.7, size: 24, name: "Les Brèches\nd’Élior"),    // Haut gauche
+        ConstellationStar(id: 2, x: 0.78, y: 0.7, size: 24, name: "L’Exploratrice des Brumes"),   // Haut droite
+        ConstellationStar(id: 3, x: 0.15, y: 0.85, size: 24, name: "Entre Silence et Tempete"),     // Bas gauche
+        ConstellationStar(id: 4, x: 0.85, y: 0.85, size: 24, name: "Au Bord du Réveil")    // Bas droite
     ]
     
     var body: some View {
@@ -105,19 +86,27 @@ struct LandingPageView: View {
                     )
                 }
                 
-                // MARK: Lignes de Constellation (style astrologique)
+                // MARK: Lignes de Constellation
                 ConstellationLinesView(
                     stars: constellationStars,
                     screenSize: geometry.size
                 )
                 
-                // MARK: Constellation - 4 Étoiles en Trapèze (TOUT AU-DESSUS)
+                // MARK: Constellation - 4 Étoiles en Trapèze
                 ForEach(constellationStars, id: \.id) { star in
                     ConstellationStarView(
                         star: star,
                         screenSize: geometry.size,
                         constellationState: constellationState
                     )
+                }
+                
+                // MARK: Portail - États Inactif/Actif
+                if constellationState.selectedStarId == nil {
+                    InactivePortalView(screenSize: geometry.size)
+                } else {
+                    ActivePortalView(screenSize: geometry.size)
+                        .environmentObject(constellationState)
                 }
                 
 
@@ -263,7 +252,7 @@ struct StarShape: Shape {
 
 // MARK: - Constellation Components
 
-// MARK: Lignes reliant les Étoiles (style astrologique)
+// MARK: Lignes reliant les Étoiles
 struct ConstellationLinesView: View {
     let stars: [ConstellationStar]
     let screenSize: CGSize
@@ -294,14 +283,14 @@ struct ConstellationLinesView: View {
         }
         .trim(from: 0, to: animationProgress)
         .stroke(
-            Color("mid-beige").opacity(0.6),
+            Color("soft-beige").opacity(0.6),
             style: StrokeStyle(
                 lineWidth: 1.5,
                 lineCap: .round,
                 lineJoin: .round
             )
         )
-        .shadow(color: Color("mid-beige").opacity(0.3), radius: 2)
+        .shadow(color: Color("soft-beige").opacity(0.3), radius: 2)
         .onAppear {
             withAnimation(.easeInOut(duration: 3.0)) {
                 animationProgress = 1.0
@@ -310,12 +299,15 @@ struct ConstellationLinesView: View {
     }
 }
 
-// MARK: Étoile de Constellation (4 branches) - MODIFIÉ
+// MARK: Étoile de Constellation (4 branches)
 struct ConstellationStarView: View {
     let star: ConstellationStar
     let screenSize: CGSize
     @ObservedObject var constellationState: ConstellationState
     @State private var isGlowing = false
+    @State private var isPulsing = false
+    @State private var pulseOpacity: Double = 1.0
+    @State private var pulseScale: CGFloat = 1.0
     
     // Computed property pour vérifier si cette étoile est sélectionnée
     private var isSelected: Bool {
@@ -323,7 +315,7 @@ struct ConstellationStarView: View {
     }
     
     var body: some View {
-        let starColor = Color("mid-beige")
+        let starColor = Color("soft-beige")
         let starSize = star.size
         let starPosition = CGPoint(
             x: star.x * screenSize.width,
@@ -331,36 +323,77 @@ struct ConstellationStarView: View {
         )
         
         Button(action: {
+            // Utiliser le state manager au lieu du state local
             constellationState.selectStar(star.id)
-            print("Étoile \(star.id) tapée - Sélectionnée: \(isSelected)")
         }) {
-            StarShape()
-                .fill(starColor)
-                .stroke(starColor.opacity(0.9), lineWidth: 2)
-                .frame(width: starSize, height: starSize)
-                .scaleEffect(
-                    // Combiner l'effet de glow et de sélection
-                    (isGlowing ? 1.1 : 1.0) * (isSelected ? 2.5 : 1.0)
-                )
-                .opacity(1.0)
-                .shadow(color: Color.black.opacity(0.6), radius: 4)
-                .shadow(color: starColor.opacity(1.0), radius: isGlowing ? 15 : 10)
-                .shadow(color: starColor.opacity(0.8), radius: isGlowing ? 25 : 20)
-                // Shadow plus forte si sélectionnée
-                .shadow(
-                    color: starColor.opacity(isSelected ? 1.0 : 0.0),
-                    radius: isSelected ? 40 : 0
-                )
+            VStack(spacing: isSelected ? 20 : 8) {
+                // L'étoile avec pulsation
+                StarShape()
+                    .fill(starColor)
+                    .stroke(starColor.opacity(0.9), lineWidth: 2)
+                    .frame(width: starSize, height: starSize)
+                    .scaleEffect(
+                        // Combiner l'effet de glow, sélection ET pulsation
+                        (isGlowing ? 1.1 : 1.0) * (isSelected ? 2.5 : 1.0) * pulseScale
+                    )
+                    .opacity(isSelected ? 1.0 : pulseOpacity)
+                    .shadow(color: Color.black.opacity(0.6), radius: 4)
+                    .shadow(color: starColor.opacity(1.0), radius: isGlowing ? 15 : 10)
+                    .shadow(color: starColor.opacity(0.8), radius: isGlowing ? 25 : 20)
+                    // Shadow plus forte si sélectionnée
+                    .shadow(
+                        color: starColor.opacity(isSelected ? 1.0 : 0.0),
+                        radius: isSelected ? 40 : 0
+                    )
+                    // Shadow de pulsation pour les étoiles non-sélectionnées
+                    .shadow(
+                        color: starColor.opacity(isSelected ? 0.0 : (isPulsing ? 0.6 : 0.3)),
+                        radius: isSelected ? 0 : (isPulsing ? 12 : 6)
+                    )
+                
+                // Le nom du rêve avec pulsation subtile
+                Text(star.name)
+                    .font(.custom("DelaGothicOne-Regular", size: isSelected ? 16 : 14))
+                    .frame(width: 140)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(starColor)
+                    .minimumScaleFactor(2)
+                    .truncationMode(.tail)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .opacity(isSelected ? 1.0 : (pulseOpacity * 0.9))
+                    .scaleEffect(isSelected ? 1.2 : (1.0 * pulseScale))
+                    .shadow(color: Color.black.opacity(0.8), radius: 2)
+                    .shadow(color: starColor.opacity(0.3), radius: isSelected ? 8 : 4)
+                    .animation(.easeInOut(duration: 0.3), value: isSelected)
+                    // Décalage supplémentaire pour éviter la superposition
+                    .offset(y: isSelected ? 15 : 0)
+            }
         }
         .buttonStyle(PlainButtonStyle())
         .position(starPosition)
         .onAppear {
-            // Animation de lueur
+            // Animation de lueur existante
             withAnimation(
                 .easeInOut(duration: 3.0)
                 .repeatForever(autoreverses: true)
             ) {
                 isGlowing.toggle()
+            }
+            
+            // Nouvelle animation de pulsation avec timing unique par étoile
+            let pulseDuration = 2.5 + Double(star.id) * 0.3 // Durée variable par étoile
+            let pulseDelay = Double(star.id) * 0.5 // Délai décalé par étoile
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + pulseDelay) {
+                withAnimation(
+                    .easeInOut(duration: pulseDuration)
+                    .repeatForever(autoreverses: true)
+                ) {
+                    isPulsing.toggle()
+                    pulseOpacity = 0.7
+                    pulseScale = 1.05
+                }
             }
         }
     }
@@ -373,7 +406,7 @@ struct ConstellationReflectionView: View {
     @State private var waveDistortion: CGFloat = 0
     
     var body: some View {
-        let reflectionColor = Color("mid-beige")
+        let reflectionColor = Color("soft-beige")
         let reflectionSize = star.size * 0.8
         let reflectionPosition = CGPoint(
             x: star.x * screenSize.width,
@@ -406,6 +439,263 @@ struct ConstellationReflectionView: View {
                     waveDistortion = 8
                 }
             }
+    }
+}
+
+// MARK: - Portail Components
+
+// MARK: Portail Inactif (État de Repos)
+struct InactivePortalView: View {
+    let screenSize: CGSize
+    @State private var breathingScale: CGFloat = 1.0
+    @State private var breathingOpacity: Double = 0.7
+    @State private var undulationRotation: Double = 0
+    @State private var verticalFloat: CGFloat = 0
+    @State private var glowIntensity: Double = 0.4
+    
+    var body: some View {
+        Image("icon-portal")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 370, height: 370)
+            .scaleEffect(breathingScale)
+            .opacity(breathingOpacity)
+            .rotationEffect(.degrees(undulationRotation))
+            .offset(y: verticalFloat)
+            .shadow(color: Color("soft-beige").opacity(glowIntensity), radius: 20)
+            .shadow(color: Color("soft-green").opacity(glowIntensity * 0.7), radius: 25)
+            .position(
+                x: screenSize.width / 2,
+                y: screenSize.height * 0.3
+            )
+            .transition(.opacity.combined(with: .scale))
+            .onAppear {
+                startPortalAnimations()
+            }
+    }
+    
+    private func startPortalAnimations() {
+        // Animation de respiration principale (4.5 secondes)
+        withAnimation(
+            .easeInOut(duration: 4)
+            .repeatForever(autoreverses: true)
+        ) {
+            breathingScale = 1.09
+            breathingOpacity = 0.9
+            glowIntensity = 0.6
+        }
+        
+        // Animation d'ondulation rotation (7 secondes)
+        withAnimation(
+            .easeInOut(duration: 7.0)
+            .repeatForever(autoreverses: true)
+        ) {
+            undulationRotation = 2.0
+        }
+        
+        // Animation de flottement vertical (5 secondes)
+        withAnimation(
+            .easeInOut(duration: 5.0)
+            .repeatForever(autoreverses: true)
+        ) {
+            verticalFloat = -3
+        }
+    }
+}
+
+// MARK: Portail Actif (État Battement de Cœur) - SwiftUI Natif
+struct ActivePortalView: View {
+    let screenSize: CGSize
+    @State private var heartbeatScale: CGFloat = 1.0
+    @State private var glowIntensity: Double = 0.8
+    @State private var particleBurstTrigger: Int = 0
+    @State private var distortionRotation: Double = 0
+    @State private var distortionOffset: CGPoint = .zero
+    @State private var distortionScaleX: CGFloat = 1.0
+    @State private var currentGlowColorIndex: Int = 0
+    
+    @EnvironmentObject var constellationState: ConstellationState
+    
+    private var portalAsset: String {
+        switch constellationState.selectedStarId {
+        case 1: return "Vortex-1"  // Liberté
+        case 2: return "Vortex-2"  // Aventure
+        case 3: return "Vortex-3"  // Amour
+        case 4: return "Vortex"    // Sagesse
+        default: return "icon-portal"
+        }
+    }
+    
+    private var glowColors: [Color] {
+        [
+            Color("sof-green"),
+            Color("soft-pink"),
+            Color("soft-beige")
+        ]
+    }
+    
+    private var currentGlowColor: Color {
+        glowColors[currentGlowColorIndex]
+    }
+    
+    var body: some View {
+        ZStack {
+            // Asset principal avec battement de cœur + distorsion + glow alternatif
+            Image(portalAsset)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 370, height: 370)
+                .scaleEffect(x: heartbeatScale * distortionScaleX, y: heartbeatScale)
+                .rotationEffect(.degrees(distortionRotation))
+                .offset(x: distortionOffset.x, y: distortionOffset.y)
+                .shadow(color: currentGlowColor.opacity(glowIntensity), radius: 10)
+                .shadow(color: currentGlowColor.opacity(glowIntensity * 0.9), radius: 15)
+                .shadow(color: currentGlowColor.opacity(glowIntensity * 0.7), radius: 20)
+            
+            // Particules qui surgissent à chaque battement
+            ForEach(0..<20, id: \.self) { index in
+                HeartbeatParticleView(
+                    index: index,
+                    burstTrigger: particleBurstTrigger,
+                    colors: [
+                        Color("sof-green").opacity(1),
+                        Color("soft-beige").opacity(1),
+                        Color("soft-pink").opacity(1)
+                    ]
+                )
+            }
+        }
+        .position(
+            x: screenSize.width / 2,
+            y: screenSize.height * 0.3
+        )
+        .transition(.scale.combined(with: .opacity))
+        .onAppear {
+            startHeartbeatAnimation()
+        }
+    }
+    
+    private func startHeartbeatAnimation() {
+        // Animation de double battement (ba-boum) avec délais SwiftUI
+        performDoubleHeartbeat()
+    }
+    
+    private func performDoubleHeartbeat() {
+        // Premier battement (ba) avec distorsion légère
+        withAnimation(.easeInOut(duration: 0.15)) {
+            heartbeatScale = 1.06
+            glowIntensity = 1.2
+            distortionRotation = 0.8
+            distortionOffset = CGPoint(x: 1, y: -0.5)
+            distortionScaleX = 1.02
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                heartbeatScale = 1.0
+                glowIntensity = 0.8
+                distortionRotation = 0
+                distortionOffset = .zero
+                distortionScaleX = 1.0
+            }
+        }
+        
+        // Pause courte avant le second battement
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            // Second battement plus fort (boum) avec distorsion plus marquée
+            withAnimation(.easeInOut(duration: 0.2)) {
+                heartbeatScale = 1.1
+                glowIntensity = 1.5
+                particleBurstTrigger += 1  // Déclenche l'expulsion de particules
+                distortionRotation = -1.2
+                distortionOffset = CGPoint(x: -1.5, y: 1)
+                distortionScaleX = 0.98
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    heartbeatScale = 1.0
+                    glowIntensity = 0.8
+                    distortionRotation = 0
+                    distortionOffset = .zero
+                    distortionScaleX = 1.0
+                }
+            }
+        }
+        
+        // Changer de couleur de glow à chaque cycle de battement (synchronisé)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            withAnimation(.easeInOut(duration: 0.4)) {
+                currentGlowColorIndex = (currentGlowColorIndex + 1) % glowColors.count
+            }
+        }
+        
+        // Relancer le cycle après 1.4 secondes
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
+            performDoubleHeartbeat()
+        }
+    }
+}
+
+// MARK: Particule de Battement de Cœur (SwiftUI Natif)
+struct HeartbeatParticleView: View {
+    let index: Int
+    let burstTrigger: Int
+    let colors: [Color]
+    @State private var offset: CGPoint = .zero
+    @State private var opacity: Double = 0.0
+    @State private var scale: CGFloat = 0.0
+    @State private var currentBurst: Int = 0
+    
+    private var particleColor: Color {
+        colors[index % colors.count]
+    }
+    
+    var body: some View {
+        Circle()
+            .fill(particleColor)
+            .frame(width: 6, height: 6)
+            .opacity(opacity)
+            .scaleEffect(scale)
+            .offset(x: offset.x, y: offset.y)
+            .shadow(color: particleColor, radius: 8)
+            .onChange(of: burstTrigger) { _ in
+                triggerParticleBurst()
+            }
+    }
+    
+    private func triggerParticleBurst() {
+        // Éviter les animations multiples simultanées
+        guard burstTrigger != currentBurst else { return }
+        currentBurst = burstTrigger
+        
+        // Reset des valeurs
+        offset = .zero
+        opacity = 1.0
+        scale = 1.0
+        
+        // Délai variable pour chaque particule
+        let particleDelay = Double(index) * 0.02
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + particleDelay) {
+            // Animation d'expulsion radiale avec chaos
+            withAnimation(.easeOut(duration: 2.5)) {
+                let baseAngle = (Double(index) / 20.0) * 2 * .pi
+                let randomAngleOffset = Double.random(in: -0.6...0.6)
+                let finalAngle = baseAngle + randomAngleOffset
+                
+                let baseDistance: CGFloat = 120
+                let randomDistanceMultiplier = CGFloat.random(in: 0.8...1.8)
+                let finalDistance = baseDistance * randomDistanceMultiplier
+                
+                offset = CGPoint(
+                    x: cos(finalAngle) * finalDistance,
+                    y: sin(finalAngle) * finalDistance
+                )
+                opacity = 0.0
+                scale = 0.1
+            }
+        }
     }
 }
 
