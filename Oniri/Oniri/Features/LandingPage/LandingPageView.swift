@@ -65,107 +65,110 @@ struct LandingPageView: View {
         ConstellationStar(id: 3, x: 0.15, y: 0.85, size: 24, name: "Entre Silence et Tempete"),     // Bas gauche
         ConstellationStar(id: 4, x: 0.85, y: 0.85, size: 24, name: "Au Bord du Réveil")    // Bas droite
     ]
-//    @State var succesVM: SuccessViewModel
+    //    @State var succesVM: SuccessViewModel
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // MARK: Ciel Étoilé - Fond Gradient
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color("dream-black"),
-                        Color("dream-black").opacity(0.8),
-                        Color("dream-black").opacity(0.9)
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea(.all)
-                
-                // MARK: Ciel Étoilé - Étoiles Scintillantes
-                ForEach(stars, id: \.id) { star in
-                    StarView(star: star, screenSize: geometry.size)
-                }
-                
-                // MARK: Ciel Étoilé - Étoiles Brillantes avec Halo
-                ForEach(0..<20, id: \.self) { index in
-                    BrightStarView(
-                        screenSize: geometry.size,
-                        randomSeed: index
+        NavigationStack {
+            GeometryReader { geometry in
+                ZStack {
+                    // MARK: Ciel Étoilé - Fond Gradient
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color("dream-black"),
+                            Color("dream-black").opacity(0.8),
+                            Color("dream-black").opacity(0.9)
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
                     )
-                }
-                
-                // MARK: Océan - Surface Animée
-                OceanView(screenSize: geometry.size)
-                
-                // MARK: Reflets Constellation sur Océan (PAR-DESSUS OCÉAN)
-                ForEach(constellationStars, id: \.id) { star in
-                    ConstellationReflectionView(
-                        star: star,
+                    .ignoresSafeArea(.all)
+                    
+                    // MARK: Ciel Étoilé - Étoiles Scintillantes
+                    ForEach(stars, id: \.id) { star in
+                        StarView(star: star, screenSize: geometry.size)
+                    }
+                    
+                    // MARK: Ciel Étoilé - Étoiles Brillantes avec Halo
+                    ForEach(0..<20, id: \.self) { index in
+                        BrightStarView(
+                            screenSize: geometry.size,
+                            randomSeed: index
+                        )
+                    }
+                    
+                    // MARK: Océan - Surface Animée
+                    OceanView(screenSize: geometry.size)
+                    
+                    // MARK: Reflets Constellation sur Océan (PAR-DESSUS OCÉAN)
+                    ForEach(constellationStars, id: \.id) { star in
+                        ConstellationReflectionView(
+                            star: star,
+                            screenSize: geometry.size
+                        )
+                    }
+                    
+                    // MARK: Lignes de Constellation
+                    ConstellationLinesView(
+                        stars: constellationStars,
                         screenSize: geometry.size
                     )
-                }
-                
-                // MARK: Lignes de Constellation
-                ConstellationLinesView(
-                    stars: constellationStars,
-                    screenSize: geometry.size
-                )
-                
-                // MARK: Constellation - 4 Étoiles en Trapèze
-                ForEach(constellationStars, id: \.id) { star in
-                    ConstellationStarView(
-                        star: star,
-                        screenSize: geometry.size,
-                        constellationState: constellationState
-                    )
-                }
-                
-                // MARK: Portail - États Inactif/Actif/Transition
-                if constellationState.isTransitioning {
-                    TransitionPortalView(
-                        screenSize: geometry.size,
-                        fromInactive: constellationState.selectedStarId != nil
-                    )
-                    .environmentObject(constellationState)
-                } else if constellationState.selectedStarId == nil {
-                    InactivePortalView(screenSize: geometry.size)
-                } else {
-                    ActivePortalView(screenSize: geometry.size)
-                        .environmentObject(constellationState)
-                }
-                
-                // MARK: Bouton Circle superposé sur le portail actif Chabane
-                if !constellationState.isTransitioning && constellationState.selectedStarId != nil {
-                    Button(action: {
-//                        DreamLaunchView(successVM: successVM)
-                    }) {
-                        Circle()
-                            .fill(Color.blue)
-                            .frame(width: 370, height: 370)
+                    
+                    // MARK: Constellation - 4 Étoiles en Trapèze
+                    ForEach(constellationStars, id: \.id) { star in
+                        ConstellationStarView(
+                            star: star,
+                            screenSize: geometry.size,
+                            constellationState: constellationState
+                        )
                     }
-                    .position(
-                        x: geometry.size.width / 2,
-                        y: geometry.size.height * 0.3
-                    )
+                    
+                    // MARK: Portail - États Inactif/Actif/Transition
+                    if constellationState.isTransitioning {
+                        TransitionPortalView(
+                            screenSize: geometry.size,
+                            fromInactive: constellationState.selectedStarId != nil
+                        )
+                        .environmentObject(constellationState)
+                    } else if constellationState.selectedStarId == nil {
+                        InactivePortalView(screenSize: geometry.size)
+                    } else {
+                        ActivePortalView(screenSize: geometry.size)
+                            .environmentObject(constellationState)
+                    }
+                    
+                    // MARK: Bouton Circle superposé sur le portail actif Chabane
+                    if !constellationState.isTransitioning && constellationState.selectedStarId != nil {
+                        NavigationLink(destination: {
+                            DreamLaunchView(successVM: successVM)
+                        }) {
+                            Circle()
+                                .fill(Color.clear)
+                                .frame(width: 370, height: 370)
+                        }
+                        .position(
+                            x: geometry.size.width / 2,
+                            y: geometry.size.height * 0.3
+                        )
+                        
+                    }
+                    
+                    // MARK: Bouton Collection (Haut Droite)// Seb Bebou
+                    Button {
+                        print("")
+                    } label: {
+                        Image("bouton-collection")
+                            .resizable()
+                            .frame(width: 44, height: 44)
+                    }
+                    .offset(x: 170, y: -360)
                 }
-                
-                // MARK: Bouton Collection (Haut Droite)// Seb Bebou
-                Button {
-                    print("")
-                } label: {
-                    Image("bouton-collection")
-                        .resizable()
-                        .frame(width: 44, height: 44)
-                }
-                .offset(x: 170, y: -360)
             }
-        }
-        .onAppear {
-            generateStars()
-        }
-        .sheet(isPresented: $showCardCollection) {
-            CardCollectionView()
+            .onAppear {
+                generateStars()
+            }
+            .sheet(isPresented: $showCardCollection) {
+                CardCollectionView()
+            }
         }
     }
     
@@ -391,12 +394,12 @@ struct ConstellationStarView: View {
                     .shadow(color: Color.black.opacity(0.6), radius: 4)
                     .shadow(color: starColor.opacity(1.0), radius: isGlowing ? 15 : 10)
                     .shadow(color: starColor.opacity(0.8), radius: isGlowing ? 25 : 20)
-                    // Shadow plus forte si sélectionnée
+                // Shadow plus forte si sélectionnée
                     .shadow(
                         color: starColor.opacity(isSelected ? 1.0 : 0.0),
                         radius: isSelected ? 40 : 0
                     )
-                    // Shadow de pulsation pour les étoiles non-sélectionnées
+                // Shadow de pulsation pour les étoiles non-sélectionnées
                     .shadow(
                         color: starColor.opacity(isSelected ? 0.0 : (isPulsing ? 0.6 : 0.3)),
                         radius: isSelected ? 0 : (isPulsing ? 12 : 6)
@@ -417,7 +420,7 @@ struct ConstellationStarView: View {
                     .shadow(color: Color.black.opacity(0.8), radius: 2)
                     .shadow(color: starColor.opacity(0.3), radius: isSelected ? 8 : 4)
                     .animation(.easeInOut(duration: 0.3), value: isSelected)
-                    // Décalage supplémentaire pour éviter la superposition
+                // Décalage supplémentaire pour éviter la superposition
                     .offset(y: isSelected ? 15 : 0)
             }
         }
@@ -1011,8 +1014,8 @@ struct OceanView: View {
             
             withAnimation(
                 .easeInOut(duration: 10)
-//                grosse vague ta vue l'animation
-                .repeatForever(autoreverses: true)
+                //                grosse vague ta vue l'animation
+                    .repeatForever(autoreverses: true)
                 
             ) {
                 waveOffset3 = screenSize.width * 1.5
