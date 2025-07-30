@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import UIKit
 struct SuccessTransitionView: View {
     
     @State var viewModel =  SuccessTransitionModelView()
@@ -32,7 +32,10 @@ struct SuccessTransitionView: View {
 
                     
                     //MARK: Texte
-                    textSuccessEnd
+                    successTextUIKit
+                        .padding(-30)
+                    
+//                    textSuccessEnd
                     
                  Spacer()
                     
@@ -80,16 +83,30 @@ struct SuccessTransitionView: View {
         .padding(.top, 60)
     }
     
-    var textSuccessEnd: some View {
-        Text(viewModel.successText)
-            .foregroundStyle(.primaryBeige)
-            .font(.system(size: 22))
-            .fontWeight(.bold)
-            .padding()
-            .frame(width: 400, height: .infinity)
-            .background(
-                Color(.darkGreen)
-            )
+//    var textSuccessEnd: some View {
+//        Text(viewModel.successText)
+//            .foregroundStyle(.primaryBeige)
+//            .font(.system(size: 22))
+//            .fontWeight(.bold)
+//            .background(
+//                Color(.darkGreen)
+//            )
+//    }
+    
+    var successTextUIKit: some View {
+        VStack{
+            SuccessDescriptionView()
+                .font(.system(size: 22))
+                .fontWeight(.bold)
+                .background(
+                    Color(.darkGreen)
+                )
+                .frame(maxWidth: .infinity, maxHeight: 200, alignment: .leading)
+              
+                
+        }
+        .frame(maxWidth: .infinity, maxHeight: 200)
+        .background(Color.darkGreen)
     }
     
     var buttonBack: some View {
@@ -111,7 +128,42 @@ struct SuccessTransitionView: View {
     }
     
 }
+struct SuccessDescriptionView: UIViewRepresentable {
+    @State var viewModel =  SuccessTransitionModelView()
+    func makeUIView(context: Context) -> UIView {
+        let container = UIView()
+        let label = UILabel()
+        label.tag = 100  // Pour le retrouver plus tard
+      
+        label.text = viewModel.successText
+        label.textColor = .primaryBeige
+        label.font = .systemFont(ofSize: 22)
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        container.addSubview(label)
+    
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 18),
+            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -18),
+            label.topAnchor.constraint(equalTo: container.topAnchor),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+        
+        return container
+    }
 
+    func updateUIView(_ uiView: UIView, context: Context) {
+        // Retrouver le UILabel via son tag
+        if let label = uiView.viewWithTag(100) as? UILabel {
+            label.text = viewModel.successText
+        }
+    }
+}
 #Preview {
     SuccessTransitionView()
 }
+
+
