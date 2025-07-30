@@ -176,7 +176,6 @@ struct LandingPageView: View {
         }else{
             CardCollectionView()
         }
-      
     }
     
     // MARK: - Star Generation

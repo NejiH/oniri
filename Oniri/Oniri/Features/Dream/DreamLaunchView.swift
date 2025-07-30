@@ -17,6 +17,9 @@ struct DreamLaunchView: View {
         if showDreamView {
             DreamView(successVM: successVM)
                 .transition(.opacity)
+                .toolbar(.hidden)
+                .navigationBarBackButtonHidden(true)
+               
         } else {
             ZStack {
                 // L' image du rêve
@@ -44,15 +47,17 @@ struct DreamLaunchView: View {
                     .foregroundColor(.black)
             }
             .transition(.opacity)
-            // Délai de 5.5 secondes avant la transition vers le rêve
+            // Délai de 2.0 secondes avant la transition vers le rêve
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     // Animation fade classique linéaire
                     withAnimation(.linear(duration: 1.0)) {
                         showDreamView = true
                     }
                 }
             }
+            .toolbar(.hidden)
+            .navigationBarBackButtonHidden(true)
         }
     }
 }
