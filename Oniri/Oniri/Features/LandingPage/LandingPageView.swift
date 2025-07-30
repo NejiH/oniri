@@ -170,6 +170,7 @@ struct LandingPageView: View {
                 CardCollectionView()
             }
         }
+       
     }
     
     // MARK: - Star Generation

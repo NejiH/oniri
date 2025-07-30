@@ -17,6 +17,9 @@ struct DreamLaunchView: View {
         if showDreamView {
             DreamView(successVM: successVM)
                 .transition(.opacity)
+                .toolbar(.hidden)
+                .navigationBarBackButtonHidden(true)
+               
         } else {
             ZStack {
                 // L' image du rêve
@@ -53,6 +56,8 @@ struct DreamLaunchView: View {
                     }
                 }
             }
+            .toolbar(.hidden)
+            .navigationBarBackButtonHidden(true)
         }
     }
 }
