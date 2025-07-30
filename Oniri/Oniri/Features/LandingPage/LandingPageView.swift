@@ -3,10 +3,28 @@ import SwiftUI
 // MARK: - Constellation State Manager
 class ConstellationState: ObservableObject {
     @Published var selectedStarId: Int? = nil
+    @Published var isTransitioning: Bool = false
     
     func selectStar(_ starId: Int) {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            selectedStarId = selectedStarId == starId ? nil : starId
+        let newStarId = selectedStarId == starId ? nil : starId
+        
+        // Si on change d'état, déclencher la transition
+        if (selectedStarId == nil) != (newStarId == nil) {
+            self.isTransitioning = true
+            
+            withAnimation(.easeInOut(duration: 0.3)) {
+                selectedStarId = newStarId
+            }
+            
+            // Fin de transition après la séquence complète (1.2s)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                self.isTransitioning = false
+            }
+        } else {
+            // Changement direct sans transition (même type d'état)
+            withAnimation(.easeInOut(duration: 0.3)) {
+                selectedStarId = newStarId
+            }
         }
     }
     
@@ -38,14 +56,16 @@ struct ConstellationStar {
 struct LandingPageView: View {
     @State private var stars: [Star] = []
     @StateObject private var constellationState = ConstellationState()
+    @State private var showCardCollection = false
     
     // MARK: Constellation en Trapèze (positionnée sur l'océan)
     private let constellationStars: [ConstellationStar] = [
-        ConstellationStar(id: 1, x: 0.22, y: 0.7, size: 24, name: "Les Brèches\nd’Élior"),    // Haut gauche
-        ConstellationStar(id: 2, x: 0.78, y: 0.7, size: 24, name: "L’Exploratrice des Brumes"),   // Haut droite
+        ConstellationStar(id: 1, x: 0.22, y: 0.7, size: 24, name: "Les Brèches\nd'Élior"),    // Haut gauche
+        ConstellationStar(id: 2, x: 0.78, y: 0.7, size: 24, name: "L'Exploratrice des Brumes"),   // Haut droite
         ConstellationStar(id: 3, x: 0.15, y: 0.85, size: 24, name: "Entre Silence et Tempete"),     // Bas gauche
         ConstellationStar(id: 4, x: 0.85, y: 0.85, size: 24, name: "Au Bord du Réveil")    // Bas droite
     ]
+//    @State var succesVM: SuccessViewModel
     
     var body: some View {
         GeometryReader { geometry in
@@ -101,20 +121,51 @@ struct LandingPageView: View {
                     )
                 }
                 
-                // MARK: Portail - États Inactif/Actif
-                if constellationState.selectedStarId == nil {
+                // MARK: Portail - États Inactif/Actif/Transition
+                if constellationState.isTransitioning {
+                    TransitionPortalView(
+                        screenSize: geometry.size,
+                        fromInactive: constellationState.selectedStarId != nil
+                    )
+                    .environmentObject(constellationState)
+                } else if constellationState.selectedStarId == nil {
                     InactivePortalView(screenSize: geometry.size)
                 } else {
                     ActivePortalView(screenSize: geometry.size)
                         .environmentObject(constellationState)
                 }
                 
-
-            
+                // MARK: Bouton Circle superposé sur le portail actif Chabane
+                if !constellationState.isTransitioning && constellationState.selectedStarId != nil {
+                    Button(action: {
+//                        DreamLaunchView(successVM: successVM)
+                    }) {
+                        Circle()
+                            .fill(Color.blue)
+                            .frame(width: 370, height: 370)
+                    }
+                    .position(
+                        x: geometry.size.width / 2,
+                        y: geometry.size.height * 0.3
+                    )
+                }
+                
+                // MARK: Bouton Collection (Haut Droite)// Seb Bebou
+                Button {
+                    print("")
+                } label: {
+                    Image("bouton-collection")
+                        .resizable()
+                        .frame(width: 44, height: 44)
+                }
+                .offset(x: 170, y: -360)
             }
         }
         .onAppear {
             generateStars()
+        }
+        .sheet(isPresented: $showCardCollection) {
+            CardCollectionView()
         }
     }
     
@@ -358,7 +409,7 @@ struct ConstellationStarView: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .foregroundColor(starColor)
-                    .minimumScaleFactor(2)
+                    .minimumScaleFactor(0.2)
                     .truncationMode(.tail)
                     .fixedSize(horizontal: false, vertical: true)
                     .opacity(isSelected ? 1.0 : (pulseOpacity * 0.9))
@@ -475,7 +526,7 @@ struct InactivePortalView: View {
     }
     
     private func startPortalAnimations() {
-        // Animation de respiration principale (4.5 secondes)
+        // Animation de respiration principale (4 secondes)
         withAnimation(
             .easeInOut(duration: 4)
             .repeatForever(autoreverses: true)
@@ -503,7 +554,170 @@ struct InactivePortalView: View {
     }
 }
 
-// MARK: Portail Actif (État Battement de Cœur) - SwiftUI Natif
+// MARK: Portail de Transition (Séquentiel)
+struct TransitionPortalView: View {
+    let screenSize: CGSize
+    let fromInactive: Bool // true = inactif → actif, false = actif → inactif
+    @EnvironmentObject var constellationState: ConstellationState
+    
+    @State private var phase: Int = 1
+    @State private var intensityScale: CGFloat = 1.0
+    @State private var explosionScale: CGFloat = 0.0
+    @State private var explosionOpacity: Double = 0.0
+    @State private var newPortalScale: CGFloat = 0.0
+    @State private var newPortalOpacity: Double = 0.0
+    @State private var transitionParticles: Int = 0
+    
+    private var currentAsset: String {
+        if !fromInactive {
+            return "icon-portal" // Retour vers inactif
+        }
+        
+        // Vers actif selon l'étoile sélectionnée
+        switch constellationState.selectedStarId {
+        case 1: return "Vortex-1"
+        case 2: return "Vortex-2"
+        case 3: return "Vortex-3"
+        case 4: return "Vortex"
+        default: return "icon-portal"
+        }
+    }
+    
+    var body: some View {
+        ZStack {
+            // Phase 1 & 2: Ancien portail qui s'intensifie puis explose
+            if phase <= 2 {
+                Image(fromInactive ? "icon-portal" : currentAsset)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 370, height: 370)
+                    .scaleEffect(intensityScale)
+                    .opacity(phase == 1 ? 1.0 : 0.0)
+                    .shadow(color: Color("soft-beige").opacity(0.8), radius: 25)
+                    .shadow(color: Color("sof-green").opacity(0.6), radius: 35)
+            }
+            
+            // Phase 2: Explosion lumineuse
+            if phase == 2 {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            gradient: Gradient(colors: [
+                                Color("soft-beige").opacity(0.8),
+                                Color("sof-green").opacity(0.4),
+                                Color.clear
+                            ]),
+                            center: .center,
+                            startRadius: 10,
+                            endRadius: 200
+                        )
+                    )
+                    .scaleEffect(explosionScale)
+                    .opacity(explosionOpacity)
+                
+                // Particules d'explosion
+                ForEach(0..<12, id: \.self) { index in
+                    TransitionParticleView(
+                        index: index,
+                        trigger: transitionParticles
+                    )
+                }
+            }
+            
+            // Phase 3: Nouveau portail qui émerge
+            if phase == 3 {
+                Image(currentAsset)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 370, height: 370)
+                    .scaleEffect(newPortalScale)
+                    .opacity(newPortalOpacity)
+                    .shadow(color: Color("sof-green").opacity(0.8), radius: 20)
+                    .shadow(color: Color("soft-pink").opacity(0.6), radius: 30)
+            }
+        }
+        .position(
+            x: screenSize.width / 2,
+            y: screenSize.height * 0.3
+        )
+        .onAppear {
+            startTransitionSequence()
+        }
+    }
+    
+    private func startTransitionSequence() {
+        // Phase 1: Intensification (0.4s)
+        withAnimation(.easeInOut(duration: 0.4)) {
+            intensityScale = 1.2
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            // Phase 2: Explosion (0.3s)
+            phase = 2
+            transitionParticles += 1
+            
+            withAnimation(.easeOut(duration: 0.2)) {
+                explosionScale = 1.0
+                explosionOpacity = 1.0
+            }
+            
+            withAnimation(.easeOut(duration: 0.3).delay(0.1)) {
+                explosionOpacity = 0.0
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                // Phase 3: Émergence (0.5s)
+                phase = 3
+                
+                withAnimation(.easeOut(duration: 0.5)) {
+                    newPortalScale = 1.0
+                    newPortalOpacity = 1.0
+                }
+            }
+        }
+    }
+}
+
+// MARK: Particule de Transition
+struct TransitionParticleView: View {
+    let index: Int
+    let trigger: Int
+    @State private var offset: CGPoint = .zero
+    @State private var opacity: Double = 0.0
+    @State private var scale: CGFloat = 0.0
+    
+    var body: some View {
+        Circle()
+            .fill(Color("soft-beige"))
+            .frame(width: 8, height: 8)
+            .scaleEffect(scale)
+            .opacity(opacity)
+            .offset(x: offset.x, y: offset.y)
+            .shadow(color: Color("soft-beige"), radius: 4)
+            .onChange(of: trigger) { _ in
+                triggerExplosion()
+            }
+    }
+    
+    private func triggerExplosion() {
+        opacity = 1.0
+        scale = 1.0
+        
+        let angle = (Double(index) / 12.0) * 2 * .pi
+        let distance: CGFloat = 150
+        
+        withAnimation(.easeOut(duration: 0.6)) {
+            offset = CGPoint(
+                x: cos(angle) * distance,
+                y: sin(angle) * distance
+            )
+            opacity = 0.0
+            scale = 0.3
+        }
+    }
+}
+
+
 struct ActivePortalView: View {
     let screenSize: CGSize
     @State private var heartbeatScale: CGFloat = 1.0
@@ -901,6 +1115,36 @@ struct LargeWaveShape: Shape {
         path.closeSubpath()
         
         return path
+    }
+}
+
+// MARK: - Test Card Collection View (Placeholder)
+struct TestCardCollectionView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("Collection de Cartes")
+                    .font(.largeTitle)
+                    .padding()
+                
+                Text("Ici sera la collection de cartes de ton collègue")
+                    .foregroundColor(.gray)
+                    .padding()
+                
+                Spacer()
+            }
+            .navigationTitle("Collection")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Fermer") {
+                        dismiss()
+                    }
+                }
+            }
+        }
     }
 }
 
