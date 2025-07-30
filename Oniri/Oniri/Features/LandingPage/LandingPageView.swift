@@ -57,7 +57,7 @@ struct LandingPageView: View {
     @State private var stars: [Star] = []
     @StateObject private var constellationState = ConstellationState()
     @State private var showCardCollection = false
-    
+    @State var collectionVM = LandingPageViewModel()
     // MARK: Constellation en Trapèze (positionnée sur l'océan)
     private let constellationStars: [ConstellationStar] = [
         ConstellationStar(id: 1, x: 0.22, y: 0.7, size: 24, name: "Les Brèches\nd'Élior"),    // Haut gauche
@@ -68,108 +68,115 @@ struct LandingPageView: View {
     //    @State var succesVM: SuccessViewModel
     
     var body: some View {
-        NavigationStack {
-            GeometryReader { geometry in
-                ZStack {
-                    // MARK: Ciel Étoilé - Fond Gradient
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color("dream-black"),
-                            Color("dream-black").opacity(0.8),
-                            Color("dream-black").opacity(0.9)
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .ignoresSafeArea(.all)
-                    
-                    // MARK: Ciel Étoilé - Étoiles Scintillantes
-                    ForEach(stars, id: \.id) { star in
-                        StarView(star: star, screenSize: geometry.size)
-                    }
-                    
-                    // MARK: Ciel Étoilé - Étoiles Brillantes avec Halo
-                    ForEach(0..<20, id: \.self) { index in
-                        BrightStarView(
-                            screenSize: geometry.size,
-                            randomSeed: index
+        if !collectionVM.isCollection {
+            NavigationStack{
+                GeometryReader { geometry in
+                    ZStack {
+                        // MARK: Ciel Étoilé - Fond Gradient
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color("dream-black"),
+                                Color("dream-black").opacity(0.8),
+                                Color("dream-black").opacity(0.9)
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
-                    }
-                    
-                    // MARK: Océan - Surface Animée
-                    OceanView(screenSize: geometry.size)
-                    
-                    // MARK: Reflets Constellation sur Océan (PAR-DESSUS OCÉAN)
-                    ForEach(constellationStars, id: \.id) { star in
-                        ConstellationReflectionView(
-                            star: star,
+                        .ignoresSafeArea(.all)
+                        
+                        // MARK: Ciel Étoilé - Étoiles Scintillantes
+                        ForEach(stars, id: \.id) { star in
+                            StarView(star: star, screenSize: geometry.size)
+                        }
+                        
+                        // MARK: Ciel Étoilé - Étoiles Brillantes avec Halo
+                        ForEach(0..<20, id: \.self) { index in
+                            BrightStarView(
+                                screenSize: geometry.size,
+                                randomSeed: index
+                            )
+                        }
+                        
+                        // MARK: Océan - Surface Animée
+                        OceanView(screenSize: geometry.size)
+                        
+                        // MARK: Reflets Constellation sur Océan (PAR-DESSUS OCÉAN)
+                        ForEach(constellationStars, id: \.id) { star in
+                            ConstellationReflectionView(
+                                star: star,
+                                screenSize: geometry.size
+                            )
+                        }
+                        
+                        // MARK: Lignes de Constellation
+                        ConstellationLinesView(
+                            stars: constellationStars,
                             screenSize: geometry.size
                         )
-                    }
-                    
-                    // MARK: Lignes de Constellation
-                    ConstellationLinesView(
-                        stars: constellationStars,
-                        screenSize: geometry.size
-                    )
-                    
-                    // MARK: Constellation - 4 Étoiles en Trapèze
-                    ForEach(constellationStars, id: \.id) { star in
-                        ConstellationStarView(
-                            star: star,
-                            screenSize: geometry.size,
-                            constellationState: constellationState
-                        )
-                    }
-                    
-                    // MARK: Portail - États Inactif/Actif/Transition
-                    if constellationState.isTransitioning {
-                        TransitionPortalView(
-                            screenSize: geometry.size,
-                            fromInactive: constellationState.selectedStarId != nil
-                        )
-                        .environmentObject(constellationState)
-                    } else if constellationState.selectedStarId == nil {
-                        InactivePortalView(screenSize: geometry.size)
-                    } else {
-                        ActivePortalView(screenSize: geometry.size)
-                            .environmentObject(constellationState)
-                    }
-                    
-                    // MARK: Bouton Circle superposé sur le portail actif Chabane
-                    if !constellationState.isTransitioning && constellationState.selectedStarId != nil {
-                        NavigationLink(destination: {
-                            DreamLaunchView(successVM: successVM)
-                        }) {
-                            Circle()
-                                .fill(Color.clear)
-                                .frame(width: 370, height: 370)
+                        
+                        // MARK: Constellation - 4 Étoiles en Trapèze
+                        ForEach(constellationStars, id: \.id) { star in
+                            ConstellationStarView(
+                                star: star,
+                                screenSize: geometry.size,
+                                constellationState: constellationState
+                            )
                         }
-                        .position(
-                            x: geometry.size.width / 2,
-                            y: geometry.size.height * 0.3
-                        )
+                        
+                        // MARK: Portail - États Inactif/Actif/Transition
+                        if constellationState.isTransitioning {
+                            TransitionPortalView(
+                                screenSize: geometry.size,
+                                fromInactive: constellationState.selectedStarId != nil
+                            )
+                            .environmentObject(constellationState)
+                        } else if constellationState.selectedStarId == nil {
+                            InactivePortalView(screenSize: geometry.size)
+                        } else {
+                            ActivePortalView(screenSize: geometry.size)
+                                .environmentObject(constellationState)
+                        }
+                        
+                        // MARK: Bouton Circle superposé sur le portail actif Chabane
+                        if !constellationState.isTransitioning && constellationState.selectedStarId != nil {
+                            NavigationLink(destination: {
+                                DreamLaunchView(successVM: successVM)
+                            }) {
+                                Circle()
+                                    .fill(Color.clear)
+                                    .frame(width: 370, height: 370)
+                            }
+                            .position(
+                                x: geometry.size.width / 2,
+                                y: geometry.size.height * 0.3
+                            )
+                            
+                        }
+                        
+                        // MARK: Bouton Collection (Haut Droite)// Seb Bebou
+                        Button {
+                            collectionVM.goCollection()
+                            print(collectionVM.goCollection())
+                        } label: {
+                            Image("bouton-collection")
+                                .resizable()
+                                .frame(width: 44, height: 44)
+                        }
+                        .offset(x: 170, y: -360)
                         
                     }
-                    
-                    // MARK: Bouton Collection (Haut Droite)// Seb Bebou
-                    Button {
-                        print("")
-                    } label: {
-                        Image("bouton-collection")
-                            .resizable()
-                            .frame(width: 44, height: 44)
-                    }
-                    .offset(x: 170, y: -360)
+                }
+                .onAppear {
+                    generateStars()
+                }
+                .sheet(isPresented: $showCardCollection) {
+                    CardCollectionView()
                 }
             }
-            .onAppear {
-                generateStars()
-            }
-            .sheet(isPresented: $showCardCollection) {
-                CardCollectionView()
-            }
+        }else{
+            CardCollectionView()
         }
+      
     }
     
     // MARK: - Star Generation
