@@ -45,7 +45,7 @@ struct DreamView: View {
                                 .textCase(.uppercase)
                                 .font(Font.custom("DelaGothicOne-Regular", size: 22))
                                 .bold()
-                    
+                            
                             // Le sous-titre
                             Text(viewModel.currentHistory.subtitle)
                                 .bold()

@@ -33,7 +33,7 @@ struct SuccesView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         }else {
-            SuccessEndView()
+            SuccessTransitionView()
         }
     }
     //MARK: Composants de la vue Body
@@ -76,8 +76,8 @@ struct SuccesView: View {
                 .bold()
                 .padding()
                 .background{
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(.sofGreen)
+                    Capsule()
+                        .fill(.darkGreen)
                         .frame(width: 150)
                 }
         }

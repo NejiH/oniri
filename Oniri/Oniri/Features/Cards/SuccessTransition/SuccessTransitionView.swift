@@ -1,15 +1,15 @@
 //
-//  SuccessEndView.swift
+//  SuccessTransitionView.swift
 //  Oniri
 //
-//  Created by Arnaud Hayon on 29/07/2025.
+//  Created by Arnaud Hayon on 30/07/2025.
 //
 
 import SwiftUI
 
-struct SuccessEndView: View {
+struct SuccessTransitionView: View {
     
-    @State var viewModel =  SuccessEndViewModel()
+    @State var viewModel =  SuccessTransitionModelView()
     
     var body: some View {
         if !viewModel.isBack {
@@ -17,13 +17,16 @@ struct SuccessEndView: View {
                 //MARK: -Background
                 backgroundSuccess
                     .ignoresSafeArea()
+                backgroundColor
+                    .ignoresSafeArea()
+                
                 VStack(alignment: .center, spacing:10){
                     //MARK: Titre Félicitations
                     contentText
                     Spacer()
                     
                     //MARK: Cartes
-                    imageCards
+//                    imageCards
                 
 
 
@@ -31,7 +34,7 @@ struct SuccessEndView: View {
                     //MARK: Texte
                     textSuccessEnd
                     
-                    Spacer()
+                 Spacer()
                     
                     //MARK: Button
                     buttonBack
@@ -43,19 +46,21 @@ struct SuccessEndView: View {
             
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            LandingPageView()
+            SuccessEndView()
         }
        
         
     }
     
     var backgroundSuccess: some View {
-        VStack(spacing: -1){
-            Rectangle()
-                .fill(.sofGreen)
-            Rectangle()
-                .fill(.softPink)
-        }
+        viewModel.backgroundCard
+    }
+    
+    var backgroundColor: some View {
+        Rectangle()
+            .fill(.darkGreen)
+            .opacity(0.8)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
     var contentText: some View {
@@ -65,65 +70,48 @@ struct SuccessEndView: View {
                 .frame(width: 200, height: 2)
             
             //MARK: Titre
-            Text("PERSONNALITÉ")
+            Text("DÉCOUVRE TA PERSONNALITÉ")
                 .font(.custom("DelaGothicOne-Regular", size: 30))
                 .foregroundStyle(.primaryBeige)
                 .bold()
                 .textCase(.uppercase)
-            HStack {
-                Text("Vous êtes")
-                 Text("bienveillant·e")
-                    .bold()
-            }
-            .foregroundStyle(.primaryBeige)
-            .font(.system(size: 22))
-            .multilineTextAlignment(.center)
-            .padding(.horizontal, 30)
-            .padding(.top, 20)
-            
+                .multilineTextAlignment(.center)
         }
-    }
-    
-   
-    
-    var imageCards: some View {
-        viewModel.successCards
-            .resizable()
-            .scaledToFill()
-            .frame(maxWidth: 360, maxHeight: 270)
-        
+        .padding(.top, 60)
     }
     
     var textSuccessEnd: some View {
         Text(viewModel.successText)
-            .frame(width: 320, height: 200)
-    }
-    
-    var logoSuccessEnd: some View {
-        viewModel.successLogo
-            .resizable()
-            .frame(width:128, height: 123)
+            .foregroundStyle(.primaryBeige)
+            .font(.system(size: 22))
+            .fontWeight(.bold)
+            .padding()
+            .frame(width: 400, height: .infinity)
+            .background(
+                Color(.darkGreen)
+            )
     }
     
     var buttonBack: some View {
         Button {
             viewModel.goBack()
         } label: {
-            Text("Retour")
-                .foregroundStyle(.primaryBeige)
+            Text("Ma personnalité")
+                .foregroundStyle(.dreamBlack)
                 .bold()
                 .padding()
                 .background{
                     Capsule()
-                        .fill(.darkGreen)
+                        .fill(.softPink)
                         .frame(width: 150)
                 }
         }
         .padding(.vertical, 10)
+        .padding(.bottom, 50)
     }
     
 }
 
 #Preview {
-    SuccessEndView()
+    SuccessTransitionView()
 }
