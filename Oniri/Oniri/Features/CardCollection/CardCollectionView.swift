@@ -13,6 +13,15 @@ struct CardCollectionView: View {
     var body: some View {
         if !cardsCollectionVM.isBack == true{
             ZStack{
+                Color.primaryBeige
+                    .ignoresSafeArea()
+                
+                // Le cadre décoratif
+                Image("CadreDecoratif")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(5)
+                
                 VStack{
                     //MARK: Oeuil
                     Image("top-eye")
@@ -35,11 +44,6 @@ struct CardCollectionView: View {
             .navigationBarBackButtonHidden(true)
             //MARK: Background
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background{
-                Rectangle()
-                    .fill(.primaryBeige)
-                Image("CadreDecoratif")
-            }
             .ignoresSafeArea(.all)
         }else{
             LandingPageView()
