@@ -1,4 +1,5 @@
 import SwiftUI
+import AVFoundation
 
 // MARK: - Constellation State Manager
 class ConstellationState: ObservableObject {
@@ -66,6 +67,7 @@ struct LandingPageView: View {
         ConstellationStar(id: 4, x: 0.85, y: 0.85, size: 24, name: "Au Bord du Réveil")    // Bas droite
     ]
     //    @State var succesVM: SuccessViewModel
+    @State private var musicLandingPage: AVAudioPlayer?
     
     var body: some View {
         if !collectionVM.isCollection {
@@ -141,17 +143,23 @@ struct LandingPageView: View {
                         if !constellationState.isTransitioning && constellationState.selectedStarId != nil {
                             NavigationLink(destination: {
                                 DreamLaunchView(successVM: successVM)
+                                    
                             }) {
                                 Circle()
                                     .fill(Color.clear)
                                     .frame(width: 370, height: 370)
+                                    
                             }
+                            .simultaneousGesture(TapGesture().onEnded({
+                                musicLandingPage?.stop()
+                                }))
                             .position(
                                 x: geometry.size.width / 2,
                                 y: geometry.size.height * 0.3
                             )
                             
                         }
+                            
                         
                         // MARK: Bouton Collection (Haut Droite)// Seb Bebou
                         Button {
@@ -164,10 +172,26 @@ struct LandingPageView: View {
                         }
                         .offset(x: 170, y: -360)
                         
+                        
+                        
                     }
                 }
                 .onAppear {
                     generateStars()
+                    //MARK: - MUSIQUE
+                    guard let url = Bundle.main.url(forResource: "SoundPortal", withExtension: "mp3") else {
+                        print("Fichier audio introuvable.")
+                        return
+                    }
+
+                    do {
+                        musicLandingPage = try AVAudioPlayer(contentsOf: url)
+                        musicLandingPage?.play()
+                    } catch {
+                        // couldn't load file :(
+                        print("Impossible de lire le fichier audio")
+                    }
+
                 }
                 .sheet(isPresented: $showCardCollection) {
                     CardCollectionView()
@@ -196,6 +220,8 @@ struct LandingPageView: View {
         }
         stars = newStars
     }
+    
+    
 }
 
 // MARK: - Ciel Étoilé Components
@@ -523,7 +549,7 @@ struct InactivePortalView: View {
             .rotationEffect(.degrees(undulationRotation))
             .offset(y: verticalFloat)
             .shadow(color: Color("soft-beige").opacity(glowIntensity), radius: 20)
-            .shadow(color: Color("soft-green").opacity(glowIntensity * 0.7), radius: 25)
+            .shadow(color: Color("sof-green").opacity(glowIntensity * 0.7), radius: 25)
             .position(
                 x: screenSize.width / 2,
                 y: screenSize.height * 0.3

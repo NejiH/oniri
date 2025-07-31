@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct DreamView: View {
     
     @State private var viewModel = HistoryViewModel()
     @State private var selectedAnswer: Int? = nil
     @State var successVM: SuccessViewModel
+    @State private var musicDreamView: AVAudioPlayer?
     
     
     var body: some View {
@@ -137,6 +139,9 @@ struct DreamView: View {
                                         .foregroundColor(.white)
                                         .cornerRadius(40)
                                 }
+                                .simultaneousGesture(TapGesture().onEnded({
+                                    musicDreamView?.stop()
+                                    }))
                             }
                             Spacer(minLength: 80)
                         }
@@ -158,6 +163,22 @@ struct DreamView: View {
                         )
                     )
                 }
+            }
+            .onAppear {
+                //MARK: - MUSIQUE
+                guard let url = Bundle.main.url(forResource: "SoundDream", withExtension: "mp3") else {
+                    print("Fichier audio introuvable.")
+                    return
+                }
+
+                do {
+                    musicDreamView = try AVAudioPlayer(contentsOf: url)
+                    musicDreamView?.play()
+                } catch {
+                    // couldn't load file :(
+                    print("Impossible de lire le fichier audio")
+                }
+
             }
         }
     }
